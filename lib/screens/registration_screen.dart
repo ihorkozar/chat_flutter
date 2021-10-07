@@ -1,4 +1,4 @@
-import 'package:chat_flutter/components/custom_button.dart';
+import 'package:chat_flutter/custom_widgets/custom_button.dart';
 import 'package:chat_flutter/constants.dart';
 import 'package:chat_flutter/screens/chat_screen.dart';
 import 'package:flutter/material.dart';

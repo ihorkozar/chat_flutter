@@ -1,6 +1,8 @@
+import 'package:chat_flutter/custom_widgets/msg.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_flutter/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatScreen extends StatefulWidget {
   static const id = '/chat_screen';
@@ -11,7 +13,12 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final _auth = FirebaseAuth.instance;
+  final _fireStore = FirebaseFirestore.instance;
   User? _firebaseUser;
+  String? msg;
+  final _controller = TextEditingController();
+  CollectionReference messages =
+      FirebaseFirestore.instance.collection('messages');
 
   void getCurrentUser() {
     try {
@@ -30,6 +37,13 @@ class _ChatScreenState extends State<ChatScreen> {
     getCurrentUser();
   }
 
+  Future<void> addMessage() {
+    return messages
+        .add({'sender': FirebaseAuth.instance.currentUser?.email, 'text': msg})
+        .then((value) => print("Message Added"))
+        .catchError((error) => print("Failed to add user: $error"));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +53,6 @@ class _ChatScreenState extends State<ChatScreen> {
           IconButton(
               icon: Icon(Icons.close),
               onPressed: () {
-                //Implement logout functionality
                 _auth.signOut();
                 Navigator.pop(context);
               }),
@@ -50,24 +63,25 @@ class _ChatScreenState extends State<ChatScreen> {
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
+            Chat(),
             Container(
               decoration: kMessageContainerDecoration,
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Expanded(
                     child: TextField(
+                      controller: _controller,
                       onChanged: (value) {
-                        //Do something with the user input.
+                        msg = value;
                       },
                       decoration: kMessageTextFieldDecoration,
                     ),
                   ),
                   TextButton(
                     onPressed: () {
-                      //Implement send functionality.
+                      _controller.clear();
+                      addMessage();
                     },
                     child: Text(
                       'Send',

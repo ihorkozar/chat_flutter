@@ -1,5 +1,5 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:chat_flutter/components/custom_button.dart';
+import 'package:chat_flutter/custom_widgets/custom_button.dart';
 import 'package:chat_flutter/screens/login_screen.dart';
 import 'package:chat_flutter/screens/registration_screen.dart';
 import 'package:flutter/material.dart';

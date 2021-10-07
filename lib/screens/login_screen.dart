@@ -1,4 +1,4 @@
-import 'package:chat_flutter/components/custom_button.dart';
+import 'package:chat_flutter/custom_widgets/custom_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_flutter/constants.dart';
@@ -44,7 +44,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   keyboardType: TextInputType.emailAddress,
                   textAlign: TextAlign.center,
                   onChanged: (value) {
-                    //Do something with the user input.
                     email = value;
                   },
                   decoration:
@@ -56,7 +55,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   obscureText: true,
                   textAlign: TextAlign.center,
                   onChanged: (value) {
-                    //Do something with the user input.
                     password = value;
                   },
                   decoration: kTextRegDecoration.copyWith(
@@ -72,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   });
                   try {
                     final UserCredential? newUser =
-                        await _auth.createUserWithEmailAndPassword(
+                        await _auth.signInWithEmailAndPassword(
                             email: email, password: password);
                     if (newUser != null) {
                       Navigator.pushNamed(context, ChatScreen.id);
