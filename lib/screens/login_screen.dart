@@ -2,8 +2,7 @@ import 'package:chat_flutter/components/custom_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_flutter/constants.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
-
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'chat_screen.dart';
 
 class LoginScreen extends StatefulWidget {

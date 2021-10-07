@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1038805493681:android:6f4cc845dd14ea06f73f90",
+        "mobilesdk_app_id": "1:1038805493681:android:77a8600f74e06dc6f73f90",
         "android_client_info": {
-          "package_name": "com.ik.chat_flutter"
+          "package_name": "com.example.chat_flutter"
         }
       },
       "oauth_client": [
