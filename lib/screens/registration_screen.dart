@@ -1,12 +1,14 @@
+import 'package:blurry_modal_progress_hud/blurry_modal_progress_hud.dart';
 import 'package:chat_flutter/custom_widgets/custom_button.dart';
 import 'package:chat_flutter/constants.dart';
 import 'package:chat_flutter/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class RegistrationScreen extends StatefulWidget {
   static const id = '/reg_screen';
+
+  const RegistrationScreen({Key? key}) : super(key: key);
 
   @override
   _RegistrationScreenState createState() => _RegistrationScreenState();
@@ -20,24 +22,24 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ModalProgressHUD(
+    return BlurryModalProgressHUD(
       inAsyncCall: showProgress,
       child: Scaffold(
         backgroundColor: Colors.white,
         body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Hero(
                 tag: 'logo',
-                child: Container(
+                child: SizedBox(
                   height: 200.0,
                   child: Image.asset('assets/logo.png'),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 48.0,
               ),
               TextField(
@@ -48,7 +50,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   },
                   decoration:
                       kTextRegDecoration.copyWith(hintText: 'Enter Your email')),
-              SizedBox(
+              const SizedBox(
                 height: 8.0,
               ),
               TextField(
@@ -59,7 +61,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   },
                   decoration: kTextRegDecoration.copyWith(
                       hintText: 'Enter Your password')),
-              SizedBox(
+              const SizedBox(
                 height: 24.0,
               ),
               CustomButton(
@@ -72,13 +74,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     final UserCredential? newUser = await _auth.createUserWithEmailAndPassword(
                         email: email, password: password);
                     if (newUser != null) {
-                      Navigator.pushNamed(context, ChatScreen.id);
+                      Navigator.popAndPushNamed(context, ChatScreen.id);
                     }
                     setState(() {
                       showProgress = false;
                     });
                   } catch (e) {
-                    print(e);
+                    setState(() {
+                      showProgress = false;
+                    });
+                    if (e is FirebaseAuthException){
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message.toString())));
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Error')));
+                    }
                   }
                 },
               )

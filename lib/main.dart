@@ -8,19 +8,21 @@ import 'package:chat_flutter/screens/chat_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(Chat());
+  runApp(const Chat());
 }
 
 class Chat extends StatelessWidget {
+  const Chat({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       initialRoute: '/',
       routes: {
-        '/': (context) => WelcomeScreen(),
-        RegistrationScreen.id: (context) => RegistrationScreen(),
-        LoginScreen.id: (context) => LoginScreen(),
-        ChatScreen.id: (context) => ChatScreen(),
+        '/': (context) => const WelcomeScreen(),
+        RegistrationScreen.id: (context) => const RegistrationScreen(),
+        LoginScreen.id: (context) => const LoginScreen(),
+        ChatScreen.id: (context) => const ChatScreen(),
       },
     );
   }
