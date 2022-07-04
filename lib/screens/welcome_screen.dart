@@ -12,10 +12,10 @@ class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
 
   @override
-  _WelcomeScreenState createState() => _WelcomeScreenState();
+  WelcomeScreenState createState() => WelcomeScreenState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen>
+class WelcomeScreenState extends State<WelcomeScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation _animation;
@@ -39,69 +39,90 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _animation.value,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Hero(
-                  tag: 'logo',
-                  child: SizedBox(
-                    child: Image.asset('assets/logo.png'),
-                    height: 60,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.1,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Hero(
+                    tag: 'logo',
+                    child: SizedBox(
+                      height: 60,
+                      child: Image.asset('assets/logo.png'),
+                    ),
                   ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Hero(
+                    tag: 'HeroTitle',
+                    child: AnimatedTextKit(
+                      animatedTexts: [
+                        TypewriterAnimatedText('FireChat',
+                            textStyle: const TextStyle(
+                              fontSize: 45.0,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.green,
+                            ))
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 48.0,
+              ),
+              Hero(
+                tag: 'loginbutton',
+                child: CustomButton(
+                  text: 'Log In',
+                  onTap: () => Navigator.pushNamed(context, LoginScreen.id),
                 ),
-                const SizedBox(
-                  width: 10,
+              ),
+              Hero(
+                tag: 'signupbutton',
+                child: CustomButton(
+                  text: 'Register',
+                  onTap: () => Navigator.pushNamed(context, RegistrationScreen.id),
                 ),
-                AnimatedTextKit(
-                  animatedTexts: [
-                    TypewriterAnimatedText('Fire Chat',
-                        textStyle: const TextStyle(
-                          fontSize: 45.0,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.green,
-                        ))
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 48.0,
-            ),
-            CustomButton(
-              text: 'Log In',
-              onTap: () => Navigator.pushNamed(context, LoginScreen.id),
-            ),
-            CustomButton(
-              text: 'Register',
-              onTap: () => Navigator.pushNamed(context, RegistrationScreen.id),
-            ),
-            SocialCustomButton(
-              text: 'Sign Up with Google',
-              onTap: () async {
-                FirebaseService service = FirebaseService();
-                try {
-                  await service.signInGoogle()
-                      .then((_) => Navigator.pushNamed(context, ChatScreen.id));
-                  //Navigator.pushNamed(context, ChatScreen.id);
-                } catch (e) {
-                  print(e);
-                  if (e is FirebaseAuthException) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(e.message.toString())));
-                  } else {
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(const SnackBar(content: Text('Error')));
+              ),
+              SocialCustomButton(
+                text: 'Sign Up with Google',
+                onTap: () async {
+                  FirebaseService service = FirebaseService();
+                  try {
+                    await service
+                        .signInGoogle()
+                        .then((_) => Navigator.pushNamed(context, ChatScreen.id));
+                  } catch (e) {
+                    debugPrint(e.toString());
+                    if (e is FirebaseAuthException) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(e.message.toString())));
+                    } else {
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(const SnackBar(content: Text('Error')));
+                    }
                   }
-                }
-              },
-            ),
-          ],
+                },
+              ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.1,
+              ),
+              const Text(
+                'Made with ♥ in Ukraine',
+                style: TextStyle(fontFamily: 'Poppins'),
+              ),
+            ],
+          ),
         ),
       ),
     );

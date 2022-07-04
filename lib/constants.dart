@@ -19,9 +19,10 @@ const kMessageContainerDecoration = BoxDecoration(
 );
 
 const kTextRegDecoration = InputDecoration(
+  //prefixIconConstraints: BoxConstraints(minWidth: 50),
+  //constraints: BoxConstraints(minWidth: 0),
   hintText: 'Enter...',
-  contentPadding:
-  EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+  contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
   border: OutlineInputBorder(
     borderRadius: BorderRadius.all(Radius.circular(32.0)),
   ),

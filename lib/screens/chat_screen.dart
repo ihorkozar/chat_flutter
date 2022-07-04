@@ -1,9 +1,10 @@
-import 'package:chat_flutter/custom_widgets/msg_bubble.dart';
-import 'package:flutter/material.dart';
 import 'package:chat_flutter/constants.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:chat_flutter/custom_widgets/msg_bubble.dart';
+import 'package:chat_flutter/firebase_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../firebase_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+
 import 'login_screen.dart';
 
 final _firestore = FirebaseFirestore.instance;
@@ -15,11 +16,10 @@ class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
 
   @override
-  _ChatScreenState createState() => _ChatScreenState();
+  ChatScreenState createState() => ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
-
+class ChatScreenState extends State<ChatScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String? msg;
   final _controller = TextEditingController();
@@ -27,15 +27,13 @@ class _ChatScreenState extends State<ChatScreen> {
   CollectionReference messages =
       FirebaseFirestore.instance.collection('messages');
 
-  void getCurrentUser(){
+  void getCurrentUser() {
     try {
       final user = _auth.currentUser;
       if (user != null) {
         _firebaseUser = user;
-        print(user);
       }
     } catch (e) {
-      print(e);
       Navigator.pushNamed(context, LoginScreen.id);
     }
   }
@@ -50,17 +48,45 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: null,
-        actions: <Widget>[
-          IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () async {
-                await FirebaseService().signOutFromGoogle();
-                Navigator.pop(context);
-              }),
-        ],
+        elevation: 0,
+        // actions: <Widget>[
+        //   IconButton(
+        //       icon: const Icon(Icons.close),
+        //       onPressed: () async {
+        //         await FirebaseService().signOutFromGoogle();
+        //         Navigator.pop(context);
+        //       }),
+        // ],
         title: const Text('Fire Chat'),
         backgroundColor: Colors.green,
+      ),
+      drawer: Drawer(
+        child: Column(
+          children: <Widget>[
+            UserAccountsDrawerHeader(
+              decoration: const BoxDecoration(
+                color: Colors.green,
+              ),
+              accountName: Text(_firebaseUser?.displayName ?? 'name'),
+              accountEmail: Text(_firebaseUser?.email ?? 'email'),
+              currentAccountPicture: const CircleAvatar(
+                backgroundImage: NetworkImage(
+                    "https://klike.net/uploads/posts/2019-05/1556708032_1.jpg"),
+              ),
+            ),
+            const Spacer(),
+            ListTile(
+              isThreeLine: true,
+              leading: Icon(Icons.exit_to_app, size: 35,),
+              title: Text("Logout"),
+              subtitle: Text("Sign out of this account"),
+              onTap: () async {
+                await _auth.signOut();
+                Navigator.pushReplacementNamed(context, '/');
+              },
+            ),
+          ],
+        ),
       ),
       body: SafeArea(
         child: Column(
@@ -87,7 +113,9 @@ class _ChatScreenState extends State<ChatScreen> {
                       _controller.clear();
                       _firestore.collection('messages').add({
                         'text': msg,
-                        'sender': _firebaseUser?.email,
+                        'sender': _firebaseUser?.displayName ?? 'name',
+                        'senderemail': _firebaseUser?.email ?? 'email',
+                        'timestamp': DateTime.now().millisecondsSinceEpoch,
                       });
                     },
                     child: const Text(
@@ -97,6 +125,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                 ],
               ),
+            ),
+            const SizedBox(
+              height: 8,
             ),
           ],
         ),
@@ -108,13 +139,11 @@ class _ChatScreenState extends State<ChatScreen> {
 class MessagesStream extends StatelessWidget {
   const MessagesStream({Key? key}) : super(key: key);
 
-
   @override
-
   Widget build(BuildContext context) {
-
     return StreamBuilder<QuerySnapshot>(
-      stream: _firestore.collection('messages').snapshots(),
+      stream:
+          _firestore.collection('messages').orderBy('timestamp').snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Center(
@@ -131,18 +160,23 @@ class MessagesStream extends StatelessWidget {
         for (var message in messages) {
           final messageText = (message.data() as Map)['text'];
           final messageSender = (message.data() as Map)['sender'];
+          final data = (message.data() as Map)['timestamp'];
+          final currentUserName = _firebaseUser?.displayName;
 
           final messageBubble = MessageBubble(
             sender: messageSender,
             text: messageText,
-            isMe: messageSender == _firebaseUser?.email,);
+            isMe: currentUserName == messageSender,
+            data: DateTime.fromMillisecondsSinceEpoch(data).toString(),
+          );
 
           messageBubbles.add(messageBubble);
         }
         return Expanded(
           child: ListView(
             reverse: true,
-            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
             children: messageBubbles,
           ),
         );
